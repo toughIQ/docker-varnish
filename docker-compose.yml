@@ -1,0 +1,21 @@
+version: '2'
+
+services:
+  webserver:
+    image: nginx:latest
+    volumes:
+      - ./simplewebsite:/usr/share/nginx/html:ro
+# we expose Nginx port 80 on 8888 just for testing purpose to get direct access to the webserver
+    ports:
+      - 8888:80
+
+  varnish:
+    image: toughiq/varnish:latest
+    depends_on:
+      - webserver
+    volumes:
+      - ./default.vcl:/etc/varnish/default.vcl:ro
+    links:
+      - webserver:backend
+    ports:
+      - 80:80
